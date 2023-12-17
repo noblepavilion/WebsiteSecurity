@@ -1,0 +1,67 @@
+import socket
+import requests
+from bs4 import BeautifulSoup
+
+def check_website(hostname):
+    try:
+        # Get IP address
+        ip_address = socket.gethostbyname(hostname)
+        print(f"The IP address of {hostname} is {ip_address}")
+
+        # SSL/TLS Checks
+        check_ssl_tls(hostname)
+
+        # Security Headers Analysis
+        check_security_headers(hostname)
+
+        # SQL Injection Scan
+        scan_for_sql_injection(f"https://{hostname}")
+
+    except socket.error as e:
+        print(f"Error: {e}")
+
+def check_ssl_tls(hostname):
+    print("\nSSL/TLS Checks:")
+    try:
+        response = requests.get(f"https://{hostname}")
+        response.raise_for_status()
+        print("SSL/TLS Status: Secure")
+    except requests.exceptions.SSLError as ssl_error:
+        print(f"SSL/TLS Status: Insecure - {ssl_error}")
+    except requests.RequestException as e:
+        print(f"Error checking SSL/TLS: {e}")
+
+def scan_for_sql_injection(url):
+    try:
+        # Send a GET request to the URL
+        response = requests.get(url)
+        response.raise_for_status()
+
+        # Parse the HTML content using BeautifulSoup
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Check for potential SQL injection vulnerabilities (this is a basic example)
+        if 'error' in soup.text.lower():
+            print(f"Potential SQL Injection Vulnerability found at {url}")
+        else:
+            print("No SQL Injection Vulnerabilities found.")
+
+    except requests.RequestException as e:
+        print(f"Error during scan: {e}")
+
+def check_security_headers(hostname):
+    print("\nSecurity Headers Analysis:")
+    try:
+        response = requests.get(f"https://{hostname}")
+        response.raise_for_status()
+
+        print(f"Security Headers for {hostname}:")
+        for header, value in response.headers.items():
+            print(f"{header}: {value}")
+
+    except requests.RequestException as e:
+        print(f"Error checking security headers: {e}")
+
+if __name__ == "__main__":
+    website_to_check = input("Enter the website URL to check: ")
+    check_website(website_to_check)
