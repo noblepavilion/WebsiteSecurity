@@ -13,3 +13,5 @@ Use Code by
 3. Get Output
 
 MAKE SURE THAT YOU HAVE bs4 INSTALLED ON YOUR SYSTEM
+
+in cmd, use 'pip install bs4'
